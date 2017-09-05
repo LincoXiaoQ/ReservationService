@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+		 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+         http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+		 version="3.0">
+
+	<!--加载Spring配置-->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:config/application-config.xml</param-value>
+	</context-param>
+	<!--注册Spring监听器-->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<!--使用spring提供的编码处理-->
+	<filter>
+		<filter-name>springCharacterEncodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>springCharacterEncodingFilter</filter-name>
+		<url-pattern>/</url-pattern>
+	</filter-mapping>
+
+	<servlet>
+		<servlet-name>springMVCDispatcher</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:config/springMVC-config.xml</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>springMVCDispatcher</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>/static/*</url-pattern>
+		<!--SpringMVC配置SocketHandle是基于MVC环境的,需要把请求交给它-->
+		<!--<url-pattern>/Socket/*</url-pattern>-->
+	</servlet-mapping>
+<!--hibernate的奇葩配置-->
+	<filter>
+		<filter-name>SpringOpenSessionInViewFilter</filter-name>
+		<filter-class>org.springframework.orm.hibernate4.support.OpenSessionInViewFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>SpringOpenSessionInViewFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!--*.html的访问不经过spring-->
+	<!--<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.html</url-pattern>
+	</servlet-mapping>-->
+
+	<!--访问域名会自动跳转welcome file,默认会寻求index.html,上面配置了*.html静态访问,所以这里要限定-->
+	<!--可能失效,不用了,改写在spring mvc-->
+	<!--<welcome-file-list>
+		<welcome-file>/static/index.html</welcome-file>
+	</welcome-file-list>-->
+	<!--错误页面设置-->
+	<error-page>
+		<error-code>500</error-code>
+		<location>/static/other/error-500.html</location>
+	</error-page>
+</web-app>

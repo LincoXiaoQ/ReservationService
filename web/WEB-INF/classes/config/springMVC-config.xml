@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--SpringMVC-->
+<!--主配置文件-->
+<!--在web.xml指定了,如果没有,默认配置文件是<组件名>-config.xml-->
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:mvc="http://www.springframework.org/schema/mvc"
+	   xmlns:p="http://www.springframework.org/schema/p"
+	   xmlns="http://www.springframework.org/schema/beans"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+	<!--启用注解-->
+	<mvc:annotation-driven/>
+	<!--自动扫描包路径-->
+	<context:component-scan base-package="com.MVC.controller"/>
+
+	<!--添加默认servletHandler,可以自动适配路径存在的静态资源,当然前提是请求没有被前面的处理完成了
+	好东西,留着哈哈哈
+	<mvc:default-servlet-handler/>-->
+
+	<!--view加载,使用thymeleaf-->
+	<!--开发模式下禁用用cache以每次更新-->
+	<bean id="templateResolver"
+		  class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver"
+		  p:prefix="/WEB-INF"
+		  p:suffix=".html"
+		  p:cacheable="false"
+		  p:templateMode="HTML5"
+		  p:characterEncoding="utf-8"/>
+	<bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+		<property name="templateResolver" ref="templateResolver"/>
+	</bean>
+	<!--经过controller处理后会选择合适的Resolver,这里注册thymeleaf的Resolver-->
+	<bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+		<property name="templateEngine" ref="templateEngine"/>
+		<property name="characterEncoding" value="utf-8"/>
+		<!--设置viewName,告诉SpringMVC(controller)怎么选择-->
+		<!--返回路径(这里路径作为viewName)th开头使用这个解析-->
+		<property name="viewNames" value="/th/**"/>
+		<property name="order" value="10000"/>
+	</bean>
+
+	<!--空视图解析,用来转发静态html页面-->
+	<!--返回没有th前缀时调用-->
+	<!--产生新地址让其他方式解析并获得,本身没有解析html-->
+<!--	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.InternalResourceView"/>
+		<property name="prefix" value=""/>
+		<property name="suffix" value=""/>
+		&lt;!&ndash;注释掉也没差??
+		<property name="viewNames" value="/static/*"/>
+		<property name="order" value="20000"/>&ndash;&gt;
+	</bean>-->
+
+	<!--文件上传配置解析-->
+	<!--Spring mvc根据resolver类的功能选择用那个?没有的话会用thymeleaf解析器,就出错了(或者要按thymeleaf的格式写表单就可以了嘻嘻)-->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="500000"/>
+		<property name="maxUploadSizePerFile" value="500000"/>
+		<property name="defaultEncoding" value="utf-8"/>
+	</bean>
+
+	<!--Jackson解析器整合配置,实现直接在controller方法参数传入对象-->
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+					<property name="supportedMediaTypes">
+						<list>
+							<value>text/html; charset=UTF-8</value>
+							<value>application/json;charset=UTF-8</value>
+						</list>
+					</property>
+				</bean>
+				<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+					<property name="supportedMediaTypes">
+						<list>
+							<value>text/html; charset=UTF-8</value>
+							<value>application/json;charset=UTF-8</value>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<bean class="com.MVC.Socket.UserSocketServer"/>
+	<bean class="com.MVC.Socket.AdminSocketServer"/>
+	<!--登录状态拦截器-->
+	<!-- 拦截器 20170831调试关闭interceptor -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<!--在LoginInterceptor代码中只对"/admin/"和"/user/"路径采取拦截-->
+			<mvc:mapping path="/**"/>
+			<mvc:exclude-mapping path="/**/*.css"/>
+			<mvc:exclude-mapping path="/**/*.js"/>
+			<mvc:exclude-mapping path="/**/*.png"/>
+			<mvc:exclude-mapping path="/**/*.jpg"/>
+			<bean class="com.MVC.controller.LoginInterceptor"/>
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+	<!--加载配置文件-->
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+		<property name="location" value="classpath:config/springMVC.properties"/>
+	</bean>
+	<!--静态文件-->
+	<mvc:resources mapping="/resources/**" location="/WEB-INF/resources/"/>
+	<!--<mvc:resources mapping="/static/**" location="/static/"/>
+		<mvc:resources location="/static/" mapping="/**.html" />
+		当前:在web.xml中配置了static/路径不经过springmvc
+		另一种方法:web.xml配置*.html路径直接静态访问,需要模板实现的路径就不加html后缀
+		将静态页面放到统一文件夹,规定该路径静态访问
+		另一种方法:重写一个能直接返回html识图的解析器在需要的条件替代thyme解析器-->
+</beans>
+		<!--错误解决:
+		mvc:resources标签无效
+				原因: 前面的mvc标签中自动导入了错误的标签库"cache"
+				解决: 删除导入语句,重新自动导入
+		访问html出现死循环
+				原因: 因为使用了IRVR解析器处理所有html请求,IRVR解析器不是直接获取html返回视图,而是再次按路径像浏览器那样发起请求html资源,故循环解析
+				解决: 对html设置不经过spring处理,这样访问模板类和springmvc映射的html文件不能用.html路径
+		配置html原样输出解析器并限定模板页解析viewName后模板页解析器不能用
+				原因: html原样输出解析器包括了限定模板页解析器的职能,并且有更高的优先级
+				解决: 设置高优先级
+		welcome-file-list首页配置时好时坏
+				原因: welcome-file-list要经过spring mvc,先发送空路径请求"/",没有才会启用首页设置, spring mvc有时影响后续操作
+				解决: 方案(1)不用welcome-file-list了,在Spring MVC 匹配"/"
+					  方案(2)在spring mvc的bean配置文件添加"<mvc:default-servlet-handler/>"-->

@@ -1,0 +1,2 @@
+DOM.className 以及JQ设置class都出错:
+	属性要一个一个设置,不能'a b'

@@ -1,0 +1,31 @@
+/*控制面板域*/
+#controlPadContent{
+	padding-top:80px; 
+	height: 400px;
+	width: 100%
+}
+/*Linco定义加大按钮*/
+.buttons-L-plus.button-giant{
+	height: 200px;
+	width: 200px;
+	font-size: 60px;
+	margin: 0 10% 0 10%;
+	box-shadow: 3px 3px 3px #666;
+}
+.buttons-L-mid.button-giant{
+	height: 100px;
+	width: 100px;
+	font-size: 50px;
+	margin: 0 3% 0 3%;
+	box-shadow: 1px 1px 1px #666;
+}
+.buttons-L-plus .lite{
+	font-size: 28px;
+}
+/*列表样式*/
+#list-currentList li img{
+	height: 48px;
+	width: 48px;
+	border-radius: 24px;
+	margin-right: 3%;
+}

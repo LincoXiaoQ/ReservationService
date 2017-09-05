@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--hibernate-->
+<!--主配置文件-->
+<!--自由命名的-->
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xmlns="http://www.springframework.org/schema/beans"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<!--使用配置文件-->
+	<!--<context:property-placeholder location="config/hibernateConfig.properties"/>-->
+	<bean class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+		<property name="location" value="classpath:config/hibernateConfig.properties"/>
+	</bean>
+
+	<!--dataSource给下述bean引用-->
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${jdbc.driverClassName}"/>
+		<property name="url" value="${jdbc.url}"/>
+		<property name="username" value="${jdbc.username}"/>
+		<property name="password" value="${jdbc.password}"/>
+
+	</bean>
+	<!--1.配置sessionFactory-->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<!--输出语句（调试用）-->
+				<prop key="hibernate.show_sql">true</prop>
+				<!--启动建表（调试用）-->
+				<!--<prop key="hibernate.hbm2ddl.auto">update</prop>-->
+			</props>
+		</property>
+		<!--读取使用xml配置的实体-->
+		<!--<property name="mappingResources">
+			<list>
+				<value>config/entity-hbm/User.hbm.xml</value>
+				&lt;!&ndash;<value>config/entity-hbm/admin.hbm.xml</value>&ndash;&gt;
+			</list>
+		</property>-->
+		<!--读取使用注解的实体-->
+		<property name="packagesToScan">
+			<list>
+				<value>com.hibernate.entity</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- 配置Hibernate事务管理器 -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+
+	<!-- 设置HibernateDaoSupport抽象类-->
+	<bean id="hibernateDaoSupport"
+		  class="org.springframework.orm.hibernate4.support.HibernateDaoSupport"
+		  abstract="true">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+
+	<!-- dao的操作的bean 指定父对象是这个bean而不是新创建-->
+	<bean id="adminImpl" class="com.hibernate.dao.impl.AdminImpl"
+		  parent="hibernateDaoSupport"/>
+	<!--init-method 会在构造后调用,好东西-->
+	<bean id="userImpl" class="com.hibernate.dao.impl.UserImpl"
+		  parent="hibernateDaoSupport" init-method="initDao"/>
+	<bean id="noticeImpl" class="com.hibernate.dao.impl.NoticeImpl"
+		  parent="hibernateDaoSupport" init-method="initDao"/>
+</beans>

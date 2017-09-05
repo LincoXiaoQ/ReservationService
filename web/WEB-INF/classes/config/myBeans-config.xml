@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns="http://www.springframework.org/schema/beans"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+	   http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<!--业务使用的bean,不包括框架组成和hibernate用到的-->
+
+
+	<bean id="runningServer" class="com.support_Singleton.RunningServer"/>
+	<bean id="uid_UserMapper" class="com.support_Singleton.Uid_UserMapper"/>
+
+	<!--webSocket对象与注册-->
+	<bean id="uss" class="com.MVC.Socket.UserSocketServer"/>
+	<bean id="hshi" class="com.MVC.Socket.WebSocketInterceptor"/>
+	<bean id="webSocketRegister" class="com.MVC.Socket.WebSocketRegister">
+		<property name="hshi" ref="hshi"/>
+	</bean>
+
+	<bean id="queue" class="com.MVC.model.Queue"/>
+	<bean id="queueInThisServer" class="com.support_Singleton.queueHelp.QueueInThisServer"/>
+	<bean id="queueListProvider" class="com.support_Singleton.queueHelp.QueueListProvider">
+		<constructor-arg type="com.support_Singleton.queueHelp.QueueInThisServer" ref="queueInThisServer"/>
+	</bean>
+	<bean id="queueOperaEntrance" class="com.support_Singleton.queueHelp.QueueOperaEntrance">
+		<constructor-arg type="com.MVC.model.Queue" ref="queue"/>
+	</bean>
+	<bean id="thisServer" class="com.support.ThisServer" scope="prototype">
+		<property name="qits" ref="queueInThisServer"/>
+		<property name="qlp" ref="queueListProvider"/>
+		<property name="qoe" ref="queueOperaEntrance"/>
+	</bean>
+	<bean class="com.support_Singleton.LastedNotice"/>
+	<bean class="com.MVC.model.WaitQueue">
+		<constructor-arg name="qits" ref="queueInThisServer"/>
+	</bean>
+
+	<!--jackson-->
+	<bean class="com.fasterxml.jackson.databind.ObjectMapper"/>
+	<bean class="com.hibernate.outerInterface.Adapter"/>
+</beans>
