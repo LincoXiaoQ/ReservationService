@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>队列管理系统</title>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="bootstrapSwitch/css/bootstrap3/bootstrap-switch.css">
+	<link rel="stylesheet" type="text/css" href="buttons/css/buttons.css">
+	<link rel="stylesheet" type="text/css" href="css/index.css">
+	<link rel="apple-touch-icon-precomposed" href="images/icon/icon.png">
+	<link rel="shortcut icon" href="images/icon/favicon.ico">
+	<script src="js/jquery-2.1.4.min.js"></script>
+</head>
+<body>
+	<div class="container">
+		<div class="siteIcon">
+			<img src="images/user.png" alt="" data-toggle="tooltip" data-placement="top" title="用户名" draggable="false" id="display-userPic" />
+			<button class="button button-caution button-circle button-giant  buttons-L-mid" id="button-jump" id="display-jumpBtn">
+				<!-- 跳过当前-(或无效) -->
+				<span>P</span>
+			</button>
+		</div>
+	</div>
+	<div class="oprea-bar">
+		<a class="h4 h4-text">排队<small>(加入/离开队列)</small></a>
+		<div class="bootstrapSwitch" id="switch-join">
+			<input type="checkbox" checked id="switch-queue">
+		</div>
+	</div>
+	<ul id="list-currentList">
+	<!-- js按照这样生成li动态调整ul -->
+		<li class="list-group-item">
+			<img src="images/icon/icon64.png">
+			<span>队列成员1</span>
+		</li>
+		<li class="list-group-item">
+			<img src="images/icon/icon64.png">
+			队列成员 2
+		</li>
+		<li class="list-group-item">
+			<span class="badge">3</span>
+			<img src="images/icon/icon64.png">
+			队列成员 3
+		</li>
+		<li class="list-group-item">
+			<img src="images/icon/icon64.png">
+			队列成员 4
+		</li>
+		<li class="list-group-item">
+			<img src="images/icon/icon64.png">
+			<span>队列成员1</span>
+		</li>
+		<li class="list-group-item">
+			<img src="images/icon/icon64.png">
+			队列成员 2
+		</li>
+		<li class="list-group-item">
+			<img src="images/icon/icon64.png">
+			队列成员 3
+		</li>
+		<li class="list-group-item">
+			<img src="images/icon/icon64.png">
+			队列成员 4
+		</li>
+	</ul>
+	<nav>
+	    <ul class="pagination pagenav" id="list-paging">
+	      <li class="disabled"><a aria-label="Previous"> <span aria-hidden="true">&laquo;</span> </a> </li>
+	      <li class="active"><a href="#">1</a></li>
+	      <li><a href="#2">2</a></li>
+	      <li><a href="#3">3</a></li>
+	      <li><a href="#" aria-label="Next"> <span aria-hidden="true">&raquo;</span> </a> </li>
+	    </ul>
+	</nav>
+	<!--提示模态框-->
+	<div class="modal fade user-select" id="modal-win" tabindex="-1" role="dialog" aria-labelledby="areDevelopingModalLabel">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title" id="modal-title" style="cursor:default;">新公告</h4>
+	      </div>
+	      <div class="modal-body"> <img src="images/pic/xinqingfuza.jpg" alt="心情复杂" />
+	        <p style="padding:15px 15px 15px 100px; position:absolute; top:15px; cursor:default;" id="modal-text">
+	        你似乎来到了没有开荒的地方...不过没关系,后续版本会完善滴！</p>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-primary" data-dismiss="modal">朕已阅</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	<!--个人信息模态框-->
+	<div class="modal fade" id="modal-info" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	  <div class="modal-dialog" role="document">
+	    <form action="" method="post">
+	      <div class="modal-content">
+	        <div class="modal-header">
+	          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	          <h4 class="modal-title" >个人信息</h4>
+	        </div>
+	        <div class="modal-body">
+	          <table class="table" style="margin-bottom:0px;">
+	            <thead>
+	              <tr> </tr>
+	            </thead>
+	            <tbody>
+	              <tr>
+	                <td wdith="20%">姓名:</td>
+	                <td width="80%"><input type="text" value="Linco" class="form-control" name="truename" maxlength="10" autocomplete="off" /></td>
+	              </tr>
+	              <tr>
+	                <td wdith="20%">用户名:</td>
+	                <td width="80%"><input type="text" value="admin" class="form-control" name="username" maxlength="10" autocomplete="off" /></td>
+	              </tr>
+	              <tr>
+	                <td wdith="20%">邮箱:</td>
+	                <td width="80%"><input type="text" value="13531738617" class="form-control" name="usertel" maxlength="13" autocomplete="off" /></td>
+	              </tr>
+	              <tr>
+	                <td wdith="20%">旧密码:</td>
+	                <td width="80%"><input type="password" class="form-control" name="old_password" maxlength="18" autocomplete="off" /></td>
+	              </tr>
+	              <tr>
+	                <td wdith="20%">新密码:</td>
+	                <td width="80%"><input type="password" class="form-control" name="password" maxlength="18" autocomplete="off" /></td>
+	              </tr>
+	              <tr>
+	                <td wdith="20%">确认密码:</td>
+	                <td width="80%"><input type="password" class="form-control" name="new_password" maxlength="18" autocomplete="off" /></td>
+	              </tr>
+	            </tbody>
+	            <tfoot>
+	              <tr></tr>
+	            </tfoot>
+	          </table>
+	        </div>
+	        <div class="modal-footer">
+	          <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+	          <button type="submit" class="btn btn-primary">提交</button>
+	        </div>
+	      </div>
+	    </form>
+	  </div>
+	</div>
+</body>
+<script src="js/bootstrap.min.js"></script> 
+<script src="bootstrapSwitch/js/bootstrap-switch.min.js"></script>
+<script src="js/Socket.js"></script>
+<script src="js/index.js"></script>
+<script>
+	<!-- 初始化(启用)Switch -->
+	$(function(argument) {
+		$('[type="checkbox"]').bootstrapSwitch();
+	})
+	//加特效
+	$('[data-toggle="tooltip"]').tooltip();
+	//文字 切换
+	$('.h4-text').click(function (){
+		$('[type="checkbox"]').bootstrapSwitch('toggleState');
+	});
+	//按钮 点击呈现个人信息
+	$('[data-toggle="tooltip"]').click(function(){
+		console.log('clocked');
+		$('#modal-info').modal();
+	})
+</script>
+</html>
