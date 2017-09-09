@@ -8,7 +8,7 @@ var button_SF;
 var dynamic_SFstate;
 var dynamic_courrentSerTime;
 var button_SP;
-var dynamic_SPstate;
+var dynamic_SPState;
 var button_jump;
 var dynamic_jumpTime;
 
@@ -70,24 +70,25 @@ function init(){
 	modal_win=$('#modal-win');
 	modal_text=modal_win.children('div div div #modal-text');
 
-	jsonData=new Object();
+	jsonData={};
 	jsonData.code='101';
 	ajaxUrl='/ajax/admin/index';
 
 	button_SF_Listener=function (){
-		if (typeof jsonData!=undefined) {
+		//-1:无人态,0:等候态,1:进行态
+		if (typeof jsonData!='undefined') {
 			jsonData.state_SF=jsonData.state_SF==0?1:0;
-			ajax(ajaxUrl,'state_SF-'+jsonData.state_SF,onSuccess);
+			ajax(ajaxUrl,'state_SF-'+jsonData.state_SF==0?"finish":"start",onSuccess);
 			//重绘 这样没有传达的话只有下次通信才能矫正
 			setButton_SF(jsonData.state_SF==0);
 		}
 	};
 	button_SP_Listener=function(){
-		if (typeof jsonData!=undefined) {
+		if (typeof jsonData!='undefined') {
 			jsonData.state_SP=!jsonData.state_SP;
 			ajax(ajaxUrl,'state_SP-'+jsonData.state_SP,onSuccess);
 			//重绘 这样没有传达的话只有下次通信才能矫正
-			dynamic_SPState.innerHTML=json.state_SP?'P':'S';
+			dynamic_SPState.innerHTML=jsonData.state_SP?'P':'S';
 		}
 	};
 	button_jump_Listener=function(){
@@ -145,7 +146,8 @@ var onSwitch=function onBootstrapSwitch(event,state){
 				dynamic_openGroupNum.text(openGroupNum-1);
 			break;
 		case 'switch-ser':
-			ajax(ajaxUrl,'switch_ser-'+state);
+			jsonData.state_ser=!jsonData.state_ser;
+			ajax(ajaxUrl,'switch_ser-'+state,onSuccess);
 			break;
 	}
 };
@@ -158,12 +160,10 @@ var onSuccess=function onReceived(data){
 	if (json.code=='101') {
 		if (jsonData!=json) {
 			//修正对象值
-			if (json.value_qNum!=jsonData.value_qNum) {
-				dynamic_qNum.innerHTML=json.value_qNum;
-			}
-			if (json.value_wNum!=jsonData.value_wNum) {
-				dynamic_wNum.innerHTML=json.value_wNum;
-			}
+			// dynamic_qNum.innerHTML=json.value_qNum;
+			// dynamic_wNum.innerHTML=json.value_wNum;
+			dynamic_qNum.text(json.value_qNum);
+			dynamic_wNum.text(json.value_wNum);
 			//state_SF有三种:1(正在服务),0(正在等待),-1(队列空)
 			if (json.state_SF!=jsonData.state_SF) {
 				setButton_SF(json.state_SF>0);
@@ -174,8 +174,8 @@ var onSuccess=function onReceived(data){
 				dynamic_SPState.innerHTML=json.state_SP?'P':'S';
 			}
 			if (json.state_ser!=jsonData.state_ser) {
-				state_ser=json.state_ser;
-				switch_ser.find('input').bootstrapSwitch('toggleState');
+				jsonData.state_ser=state_ser=json.state_ser;
+				switch_ser.find('input').bootstrapSwitch('state',state_ser,false);
 				//switch_ser.toggleState(json.state_ser);版本问题.不支持
 			}
 			if (json.value_courrentSerTime!=jsonData.value_courrentSerTime) {
@@ -197,8 +197,11 @@ var onSuccess=function onReceived(data){
 			modal_text.text(json.text);
 			modal_win.modal();
 		}
+	}else if (json.code==400){
+		state_ser=jsonData.state_ser=false;
+		switch_ser.find('input').bootstrapSwitch('state', false,false);
 	}
-}
+};
 
 /*支持方法*/
 //界面重绘函数
@@ -296,7 +299,7 @@ function ajax(url,data,onSuccess) {
 window.onload=function(){
 	init();
 	connect();
-}
+};
 
 
 /*

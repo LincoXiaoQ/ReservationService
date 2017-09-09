@@ -50,6 +50,7 @@ public class UserSocketServer implements WebSocketHandler,OnQueueChangeListener 
 		socketSessions.add(webSocketSession);
 		Set<WebSocketSession>temp=new HashSet<>();
 		temp.add(webSocketSession);
+		// TODO: 2017/9/9 这里出错
 		pushNotice(temp,ln.getNotice());
 	}
 
@@ -130,8 +131,8 @@ public class UserSocketServer implements WebSocketHandler,OnQueueChangeListener 
 	}
 	private void pushNotice(Set<WebSocketSession> tempSocketSessions, Notice notice){
 		StringBuilder json=new StringBuilder(128);
-		json.append("{code:203");
-		json.append(",text:");
+		json.append("{\"code\":203");
+		json.append(",\"text\":");
 		json.append(notice.getTitile()).append("\n\n");
 		json.append(notice.getContent()).append("}");
 		TextMessage msg=new TextMessage(json);
@@ -147,11 +148,11 @@ public class UserSocketServer implements WebSocketHandler,OnQueueChangeListener 
 	@Override
 	public void onQueueChange() {
 		StringBuilder json=new StringBuilder(128);
-		json.append("{code:201");
-		json.append(",state_ser:true");
-		json.append(",state_SP:false");
+		json.append("{\"code\":201");
+		json.append(",\"state_ser\":true");
+		json.append(",\"state_SP\":false");
 		Iterator<ThisServer> iterator=rs.getServerMap().iterator();
-		json.append(",isWhoId:[").append(iterator.next().getCurrentUser().getUid());
+		json.append(",\"isWhoId\":[").append(iterator.next().getCurrentUser().getUid());
 			while (iterator.hasNext()){
 				json.append(",");
 				json.append(iterator.next().getCurrentUser().getUid());

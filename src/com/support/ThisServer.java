@@ -42,9 +42,9 @@ public class ThisServer implements OnQueueChangeListener{
 	private int aid;
 	private long timeServerStart;
 
-	WebSocketSession wss;
-	HttpSession hs;
-	Timer timer;
+	private WebSocketSession wss;
+	private HttpSession hs;
+	private Timer timer;
 	TimerTask tt;
 	private QueueUser currentUser;
 
@@ -158,7 +158,7 @@ public class ThisServer implements OnQueueChangeListener{
 	}
 
 	public void setWss(WebSocketSession wss) {
-		//有新设置,去除定时
+		/*有新设置,去除定时
 //		timer.cancel(); cancle会撤销整个对象,后面只能new新的
 		if (tt!=null)
 			tt.cancel();
@@ -175,7 +175,8 @@ public class ThisServer implements OnQueueChangeListener{
 			};
 			//180秒后执行
 			timer.schedule(tt,180);
-		}
+		}*/
+		doRemove();
 	}
 
 	public void setHs(HttpSession hs) {
@@ -197,19 +198,21 @@ public class ThisServer implements OnQueueChangeListener{
 			state_SF=(byte) 1;
 			cutus.updateCurrentUser(false);
 			cutc.startTimeLineTiming();
-		}
+		}else if (state_ser && state_SP)
+			state_SF=(byte)-1;
+		//否则维持原状态
 	}
 	//完成当前服务时调用
 	public void onFinish(){
 		cutc.getTimeLine();		//写入日志,暂不
 		currentUser=qoe.takeFirst();
-		onWait();				//改变队首,不用再onWait,回调有了
+		//onWait();				改变队首,不用再onWait,回调有了
 	}
 	//跳过此用户时调用
 	public void onJump(){
 		cutus.updateCurrentUser(true);
 		currentUser=qoe.takeFirst();
-		onWait();
+		//onWait();
 	}
 	//开启服务时
 	public void onOpenSer(){
@@ -225,18 +228,22 @@ public class ThisServer implements OnQueueChangeListener{
 			qoe.back(currentUser);
 		//关闭Socket连接,触发Socket超时释放倒计时
 		try {
-			wss.close();
+			if(wss!=null)
+				wss.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	//Socket断开超时,直接移除所有服务信息
-	public void doRemove(){
+	private void doRemove(){
 		//先按关闭服务善后
 		onCloseSer();
 		qoe.removeOnQueueChangeListener(this);
-		hs.removeAttribute("thisServer");
+		if (hs!=null&&hs.getAttribute("thisServer")!=null)
+			hs.removeAttribute("thisServer");
+		else
+			System.out.println("ThisServer_Log: null HS");
 		runningServer.StopServer(aid);
 	}
 	//总计时
@@ -257,7 +264,7 @@ public class ThisServer implements OnQueueChangeListener{
 	//Socket告知获得用户
 	private boolean sendMsg(){
 		try {
-			wss.sendMessage(new TextMessage("{code:204,tempTime:"+cutc.getTempAboveTime()+"}"));
+			wss.sendMessage(new TextMessage("{\"code\":204,\"tempTime\":"+cutc.getTempAboveTime()+"}"));
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
