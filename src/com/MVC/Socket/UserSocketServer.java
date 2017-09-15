@@ -52,7 +52,7 @@ public class UserSocketServer implements WebSocketHandler,OnQueueChangeListener 
 		temp.add(webSocketSession);
 		// TODO: 2017/9/9 这里出错
 		pushNotice(temp,ln.getNotice());
-	}
+	}  	
 
 	@Override
 	public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) throws Exception {
@@ -133,7 +133,7 @@ public class UserSocketServer implements WebSocketHandler,OnQueueChangeListener 
 		StringBuilder json=new StringBuilder(128);
 		json.append("{\"code\":203");
 		json.append(",\"text\":");
-		json.append(notice.getTitile()).append("\n\n");
+		json.append(notice.getTitle()).append("\n\n");
 		json.append(notice.getContent()).append("}");
 		TextMessage msg=new TextMessage(json);
 		//向组内返回

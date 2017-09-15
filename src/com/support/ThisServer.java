@@ -158,7 +158,7 @@ public class ThisServer implements OnQueueChangeListener{
 	}
 
 	public void setWss(WebSocketSession wss) {
-		/*有新设置,去除定时
+//		有新设置,去除定时
 //		timer.cancel(); cancle会撤销整个对象,后面只能new新的
 		if (tt!=null)
 			tt.cancel();
@@ -174,9 +174,8 @@ public class ThisServer implements OnQueueChangeListener{
 				}
 			};
 			//180秒后执行
-			timer.schedule(tt,180);
-		}*/
-		doRemove();
+			timer.schedule(tt,180000);
+		}
 	}
 
 	public void setHs(HttpSession hs) {

@@ -1,15 +1,28 @@
 package com.MVC.model;
 
+
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 /**
  * Created by Linco_S on 2017/7/24.
  */
 public class Notice {
+	@Id
 	private int nid;
-	private String titile;
+	private long time;
+	private String title;
 	private String content;
 
-	public Notice(String titile, String content) {
-		this.titile = titile;
+//	private boolean push;
+
+
+	public Notice() {
+	}
+
+	public Notice(String title, String content) {
+		this.title = title;
 		this.content = content;
 	}
 
@@ -17,11 +30,41 @@ public class Notice {
 		return nid;
 	}
 
-	public String getTitile() {
-		return titile;
+
+	public void setNid(int nid) {
+		this.nid = nid;
+	}
+
+	public long getTime() {
+		return time;
+	}
+
+	public void setTime(long time) {
+		this.time = time;
 	}
 
 	public String getContent() {
 		return content;
 	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+/*
+	public boolean isPush() {
+		return push;
+	}
+
+	public void setPush(boolean push) {
+		this.push = push;
+	}
+*/
 }

@@ -39,8 +39,8 @@ public class ControlPadResponder {
 					default://返回出错报告
 						return "{\"code\":400}";
 				}
-			}
-			return "{\"code\":400}";
+			}else
+				return "{\"code\":400}";
 		}
 		switch (command){
 			case "state_SF-start":

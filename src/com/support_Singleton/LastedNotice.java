@@ -4,6 +4,7 @@ import com.MVC.Socket.UserSocketServer;
 import com.MVC.model.Notice;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hibernate.dao.impl.NoticeImpl;
+import com.hibernate.outerInterface.Adapter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
@@ -15,12 +16,14 @@ import java.io.IOException;
 public class LastedNotice {
 	@Autowired
 	NoticeImpl ni;
+	@Autowired
+	Adapter adapter;
 	UserSocketServer uss;
 	Notice notice;
 
 	public Notice getNotice() {
 		if (notice==null){
-			notice=(Notice) (Object)ni.getNotice();
+			notice=adapter.getNotice(ni.getNotice());
 		}
 		return notice;
 	}

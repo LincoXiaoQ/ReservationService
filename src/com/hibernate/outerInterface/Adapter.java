@@ -47,5 +47,22 @@ public class Adapter {
 		return null;
 	}
 
+	public com.MVC.model.Notice getNotice(com.hibernate.entity.Notice notice){
+		try {
+			return objectMapper.readValue(objectMapper.writeValueAsBytes(notice),com.MVC.model.Notice.class);
+		} catch (java.io.IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
+
+	public com.hibernate.entity.Notice getNotice(com.MVC.model.Notice notice){
+		try {
+			return objectMapper.readValue(objectMapper.writeValueAsBytes(notice),com.hibernate.entity.Notice.class);
+		} catch (java.io.IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }
