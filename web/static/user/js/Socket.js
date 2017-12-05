@@ -1,6 +1,6 @@
 var ws;
 function connect(){
-	console.log(document.URI);
+	// console.log(document.URI);
 	var hosturl=window.location.host;
 	var url=hosturl+'/Socket/user';
 	ws=new WebSocket ('ws://'+url);
@@ -19,7 +19,7 @@ function connect(){
     }*/
     function onMessage(event) {
     	var json=JSON.parse(event.data);
-    	if (doMessage!=undefined)
+    	if (doMessage!='undefined')
     		doMessage(json);
     }
  

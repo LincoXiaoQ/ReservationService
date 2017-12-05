@@ -132,9 +132,9 @@ public class UserSocketServer implements WebSocketHandler,OnQueueChangeListener 
 	private void pushNotice(Set<WebSocketSession> tempSocketSessions, Notice notice){
 		StringBuilder json=new StringBuilder(128);
 		json.append("{\"code\":203");
-		json.append(",\"text\":");
-		json.append(notice.getTitle()).append("\n\n");
-		json.append(notice.getContent()).append("}");
+		json.append(",\"text\":\"");
+		json.append(notice.getTitle());
+		json.append(notice.getContent()).append("\"}");
 		TextMessage msg=new TextMessage(json);
 		//向组内返回
 		for (WebSocketSession session: tempSocketSessions){

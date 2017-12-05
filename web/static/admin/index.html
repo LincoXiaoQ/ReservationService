@@ -215,7 +215,12 @@
 						$(function(argument) {
 							$('[type="checkbox"]').bootstrapSwitch();
 							$('#switch-ser input').bootstrapSwitch('toggleState');
-						})
+						});
+						!function(){
+							if(!thymeleaf.isInit){
+								alert("Thymeleaf数据未更新");
+							}
+						}
 					</script>
 				</body>
 				</html>

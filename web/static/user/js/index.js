@@ -12,7 +12,7 @@ var uid;
 var modal_win;
 var modal_winTitle;
 var modal_winImg;
-var mpdal_winText;
+var modal_winText;
 
 var modal_info;
 
@@ -25,9 +25,11 @@ function init(){
 	list_paging=$('#list-paging');
 	uid=getCookie('uid');
 	modal_win=$('#modal-win');
-	modal_winTitle=modal_win.children('div div div #modal-title');
-	modal_winImg=modal_win.children('div div div img').eq(0);
-	modal_winText=modal_win.children('div div div #modal-text');
+	// children只遍历一级,所以不行
+	// modal_winTitle=modal_win.children('div div div #modal-title');
+	modal_winTitle=modal_win.find('div div div #modal-title');
+	modal_winImg=modal_win.find('div div div img').eq(0);
+	modal_winText = modal_win.find('div div div #modal-text');
 	modal_info=$('#modal-info');
 
 	onSwitch=function(event,state){
@@ -154,31 +156,34 @@ if (document.cookie.length>0){
 //通讯方法
 function doMessage(json){
 	switch(json.code){
-		case '201':
+		case 201:
 			state_ser=json.state_ser;
 			state_SP=json.state_SP;
 		//一些基于多队列的信息改为如果判断"是我"再发送队列标识去请求
 			checkMe(json.currentList);
 			setQueue(json.queue);
 			break;
-		case '202':
+		case 202:
 			state_ser=json.state_ser;
 			state_SP=json.state_SP;
 			if (state_ser)
 				setDisplay(json.timeTemp);
-		case '203':
+		case 203:
 			//显示公告
 			modal_winTitle.text('新公告');
 			modal_winImg.attr("src","images/pic/xinqingfuza.jpg");
 			modal_winText.text(json.text);
 			modal_win.modal();
 			break;
-		case '204':
+		case 204:
 			//显示操作信息模态窗
 			modal_winTitle.text('新提醒');
 			modal_winImg.attr("src","images/pic/xinqingfuza.jpg");
 			modal_winText.text(json.text);
 			modal_win.modal();
+			break;
+		default:
+			console.log('unKnown command!');
 			break;
 	}
 }
