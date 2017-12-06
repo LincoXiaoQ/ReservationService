@@ -50,14 +50,14 @@ public class UserSocketServer implements WebSocketHandler,OnQueueChangeListener 
 		socketSessions.add(webSocketSession);
 		Set<WebSocketSession>temp=new HashSet<>();
 		temp.add(webSocketSession);
-		// TODO: 2017/9/9 这里出错
+		// TODO: 2017/7/9 这里出错
 		pushNotice(temp,ln.getNotice());
 	}  	
 
 	@Override
 	public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) throws Exception {
 		QueueUser queueUser=(QueueUser)webSocketSession.getAttributes().get("queueUser");
-		// TODO: 2017/8/22  处理Message onMessage(queueUser,webSocketMessage.toString());
+		// TODO: 2017/6/22  处理Message onMessage(queueUser,webSocketMessage.toString());
 		String msg= webSocketMessage.toString();
 		switch (msg){
 			case "ToQueue-true":

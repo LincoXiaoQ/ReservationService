@@ -57,8 +57,9 @@ public class NoticeListResponder {
 		System.out.println("NoticeListResponder:"+json);
 		return "redirect:/admin/notice.html";
 	}
-	@RequestMapping("/admin/add-notice")
+	//Todo
+	@RequestMapping("/admin/edit-notice")
 	public String editToAddNotice(@RequestParam("ni")String index){
-		return "th/admin/add-notice";
+		return "/admin/add-notice.html";
 	}
 }
