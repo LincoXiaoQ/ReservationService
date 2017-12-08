@@ -1,8 +1,11 @@
 package com.support_Singleton.queueHelp;
 
+import com.MVC.model.Queue;
 import com.MVC.model.QueueUser;
 import com.support.ThisServer;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -10,20 +13,30 @@ import java.util.List;
  * 包装modal的信息提供给两个端,包括list和list的信息
  */
 public class QueueListProvider implements OnQueueChangeListener{
-	private QueueInThisServer queueInThisServer;
-	private List<QueueUser> uq;
 
-	private String jsonQueue;
+	//提供初始化值避免为null
+	private String jsonQueue="\"queue\":[]";
 
-	public QueueListProvider(QueueInThisServer qits) {
-		queueInThisServer = qits;
+	/*不允许这样,因为构造完成才注入,构造方法先执行
+	@Autowired
+	QueueOperaEntrance qoe;
+
+	public QueueListProvider() {
+		qoe.addOnQueueChangeListener(this);
+	}*/
+	QueueOperaEntrance qoe;
+	public QueueListProvider(QueueOperaEntrance qoe) {
+		this.qoe=qoe;
+		qoe.addOnQueueChangeListener(this);
 	}
+
 	//队列改变是调用同步方法
 	private void syncJson(){
 		StringBuilder sb=new StringBuilder();
 		sb.append("\"queue\":[");
-		for(QueueUser u:uq){
-			sb.append("\""+u.getUserName()+"\",");
+		Iterator<QueueUser> i=qoe.getIterator();
+		while(i.hasNext()){
+			sb.append("\""+i.next().getUserName()+"\",");
 		}
 		if(sb.charAt(sb.length()-1)==',')
 			sb.deleteCharAt(sb.length()-1);

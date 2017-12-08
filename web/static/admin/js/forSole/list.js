@@ -5,7 +5,7 @@ var list_paging;
 //初始化
 function init(){
 	list_currentList=$('#list-currentList');
-	list_paging=$('list-paging');
+	list_paging=$('#list-paging').eq(0);
 	doSend('102');
 }
 //设置页数
@@ -16,8 +16,8 @@ function setPaging(pageNum){
 }
 //刷新队列,依赖addCurrentQueueItem
 function setQueue(queue){
-	currentList.empty();
-	var arr=json.queue;
+	list_currentList.empty();
+	var arr=queue;
 	if (arr.length==0)
 	arr.forEach(addCurrentQueueItem);
 	mark3();
@@ -38,15 +38,15 @@ function mark3(){
 }
 
 //通讯方法
-function doMessage(json){
-	if (json.code=='102') {
+var doMessage=function (response){
+	var json=$.parseJSON(response);
+	if (json.code=='103') {
 		setPaging(json.pageNum);
-		setQueue(json);
+		setQueue(json.list);
 	}
 }
 function doSend(msg){
-	if (send!=undefined)
-		send(msg);
+	ajax("../ajax/admin/queueList",msg,doMessage);
 }
 
 
@@ -54,3 +54,17 @@ function doSend(msg){
 window.onload=function(){
 	init();
 }
+
+
+//ajax通讯方法
+function ajax(url,data,onSuccess) {
+	$.ajax({
+		type: "POST",
+		url: url,
+		data: "op="+data,
+		cache: false, //不缓存此页面
+		success: onSuccess
+	});
+}
+
+// document.write(" <script language=\"javascript\" src=\"../ajax.js\" > <\/script>");

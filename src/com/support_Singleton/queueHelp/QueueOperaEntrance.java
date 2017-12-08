@@ -6,6 +6,7 @@ import com.support.ThisServer;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 
@@ -13,16 +14,13 @@ import java.util.Set;
  * Created by Linco on 2017/8/12.
  */
 public class QueueOperaEntrance {
-	//线程同步
-	@Autowired
-	QueueListProvider qlp;
+	//线程同步有队列结构实现
 	private final Queue queue;
 	private Set<OnQueueChangeListener> oqcl;
 
 	public QueueOperaEntrance(Queue queue) {
 		this.queue = queue;
 		oqcl=new HashSet<>(8);
-		oqcl.add(qlp);	//这个要放最前面最先响应
 	}
 
 	public void add(QueueUser qu) {
@@ -44,6 +42,9 @@ public class QueueOperaEntrance {
 		QueueUser qu=queue.pop();
 		onQueueChange();
 		return qu;
+	}
+	public Iterator getIterator(){
+		return queue.getIterator();
 	}
 
 	private void onQueueChange(){

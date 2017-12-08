@@ -1,0 +1,1 @@
+manager端不用Socket,列表th即时显示就好了

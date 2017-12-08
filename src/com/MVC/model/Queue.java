@@ -1,6 +1,9 @@
 package com.MVC.model;
 
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * Created by Linco_S on 2017/7/22.
@@ -8,10 +11,10 @@ import java.util.LinkedList;
  */
 public class Queue {
 	// TODO: 2017/8/22 同步问题
-	private LinkedList<QueueUser> currentQueue;
+	private BlockingQueue<QueueUser> currentQueue;
 
 	public Queue() {
-		this.currentQueue = new LinkedList<>();
+		this.currentQueue = new LinkedBlockingDeque<>();
 	}
 
 	public void add(QueueUser qu) {
@@ -23,20 +26,23 @@ public class Queue {
 	}
 
 	public QueueUser getFirst() {
-		return currentQueue.getFirst();
+		return currentQueue.peek();
 	}
 
 	public QueueUser pop(){
 		if (!currentQueue.isEmpty())
-			return currentQueue.pop();
+			return currentQueue.poll();
 		return null;
 	}
 
+	public Iterator<QueueUser> getIterator(){
+		return currentQueue.iterator();
+	}
 	public void push(QueueUser queueUser){
-		currentQueue.push(queueUser);
+		currentQueue.add(queueUser);
 	}
 
-	public LinkedList<QueueUser> getCurrentQueue() {
+	public BlockingQueue<QueueUser> getCurrentQueue() {
 		return currentQueue;
 	}
 }

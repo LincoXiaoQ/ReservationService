@@ -50,15 +50,15 @@ public class UserSocketServer implements WebSocketHandler,OnQueueChangeListener 
 		socketSessions.add(webSocketSession);
 		Set<WebSocketSession>temp=new HashSet<>();
 		temp.add(webSocketSession);
-		// TODO: 2017/7/9 这里出错
 		pushNotice(temp,ln.getNotice());
+		pushQueueState(webSocketSession);
+		System.out.println(webSocketSession.getRemoteAddress()+" 已连接");
 	}  	
 
 	@Override
 	public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) throws Exception {
 		QueueUser queueUser=(QueueUser)webSocketSession.getAttributes().get("queueUser");
-		// TODO: 2017/6/22  处理Message onMessage(queueUser,webSocketMessage.toString());
-		String msg= webSocketMessage.toString();
+		String msg= webSocketMessage.getPayload().toString();
 		switch (msg){
 			case "ToQueue-true":
 				//如果对象不一致,使用uid工作
@@ -92,6 +92,9 @@ public class UserSocketServer implements WebSocketHandler,OnQueueChangeListener 
 					.append(thisServer.getCutc().getTempAboveTime())
 					.append("}");
 				webSocketSession.sendMessage(new TextMessage(json));
+				break;
+			default:
+				System.out.println("USS:unknown"+msg);
 		}
 	}
 
@@ -104,6 +107,7 @@ public class UserSocketServer implements WebSocketHandler,OnQueueChangeListener 
 	public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) throws Exception {
 		if (socketSessions.contains(webSocketSession))
 			socketSessions.remove(webSocketSession);
+		System.out.println(webSocketSession.getRemoteAddress()+" 已断开");
 	}
 
 	@Override
@@ -145,6 +149,34 @@ public class UserSocketServer implements WebSocketHandler,OnQueueChangeListener 
 			}
 		}
 	}
+	//推送状态信息
+	public void pushQueueState(WebSocketSession session) {
+		StringBuilder json=new StringBuilder(128);
+		json.append("{\"code\":201");
+		json.append(",\"state_ser\":true");
+		json.append(",\"state_SP\":false");
+		Iterator<ThisServer> iterator=rs.getServerMap().iterator();
+
+		//Iterator引发异常,因为当前进行为空
+		json.append(",\"isWhoId\":[").append(iterator.hasNext()?iterator.next().getCurrentUser().getUid():"");
+		while (iterator.hasNext()){
+			json.append(",");
+			json.append(iterator.next().getCurrentUser().getUid());
+		}
+		json.append("]");
+		if (qlp.getQueueJson()!=null)
+			json.append(",").append(qlp.getQueueJson());
+		json.append("}");
+		TextMessage msg=new TextMessage(json);
+		try {
+			session.sendMessage(msg);
+			System.out.println("pushQueueState:"+msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+
 	@Override
 	public void onQueueChange() {
 		StringBuilder json=new StringBuilder(128);

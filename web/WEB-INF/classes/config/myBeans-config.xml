@@ -18,11 +18,11 @@
 
 	<bean id="queue" class="com.MVC.model.Queue"/>
 	<bean id="queueInThisServer" class="com.support_Singleton.queueHelp.QueueInThisServer"/>
-	<bean id="queueListProvider" class="com.support_Singleton.queueHelp.QueueListProvider">
-		<constructor-arg type="com.support_Singleton.queueHelp.QueueInThisServer" ref="queueInThisServer"/>
-	</bean>
 	<bean id="queueOperaEntrance" class="com.support_Singleton.queueHelp.QueueOperaEntrance">
 		<constructor-arg type="com.MVC.model.Queue" ref="queue"/>
+	</bean>
+	<bean id="queueListProvider" class="com.support_Singleton.queueHelp.QueueListProvider">
+		<constructor-arg name="qoe" ref="queueOperaEntrance"/>
 	</bean>
 	<bean id="thisServer" class="com.support.ThisServer" scope="prototype">
 		<property name="qits" ref="queueInThisServer"/>

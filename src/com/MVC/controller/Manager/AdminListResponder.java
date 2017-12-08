@@ -60,6 +60,6 @@ public class AdminListResponder {
 			e.printStackTrace();
 		}
 		ai.addOrUpdate(json);
-		return "OK";
+		return "redirect:/admin/manage-admin.html";
 	}
 }

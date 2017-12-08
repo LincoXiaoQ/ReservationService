@@ -97,17 +97,14 @@ function check(queueUser){
 	}
 }
 //检查是否有本用户
-function checkMe(currentList){
-	if (currentList[0].uid===uid)
-		send("202");
-	else {
-		for (var i=0;i<currentList.length;i++){
-			if (currentList[i].uid===uid) {
+function checkMe(isWhoId){
+		for (var i=0;i<isWhoId.length;i++){
+			if (isWhoId[i]===uid) {
+				send("202");
 				console.log(i);
 				break;
 			}
 		}
-	}
 }
 //设置页数
 function setPaging(pageNum){
@@ -117,10 +114,10 @@ function setPaging(pageNum){
 }
 //刷新队列,依赖addCurrentQueueItem
 function setQueue(queue){
-	currentList.empty();
+	list_currentList.empty();
 	var arr=queue;
 	//页数,需要修正
-	setPaging(praseInt(arr.length/20)+1);
+	setPaging(parseInt(arr.length/20)+1);
 	if (arr.length!=0)
 		arr.forEach(addCurrentQueueItem);	//forEach的值会自动作为方法参数
 	mark3();
@@ -160,7 +157,7 @@ function doMessage(json){
 			state_ser=json.state_ser;
 			state_SP=json.state_SP;
 		//一些基于多队列的信息改为如果判断"是我"再发送队列标识去请求
-			checkMe(json.currentList);
+			checkMe(json.isWhoId);
 			setQueue(json.queue);
 			break;
 		case 202:
